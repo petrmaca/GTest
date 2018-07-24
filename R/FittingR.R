@@ -7,7 +7,7 @@
 #' @param OPtFunType type of inverse problem minimization based on MSE - \code{MSE}, MAE -  \code{MAE}, MAx error  \code{MAXER}
 #' @param ... additional parameters of \code{RcppDE}
 #'
-#' @return object
+#' @return list,  well pumping test parameters Cbar and Skin, simulated dimensionles drawdown
 #' @export
 #'
 #'
@@ -15,7 +15,9 @@
 #'
 #' DimlesTime =c (1.88, 3.74, 11.83,47.1,118.31,470.98,1489.37,3741.12, 14893.66)
 #' obsSnormDra = c( 0.09899987,0.19699975,0.60699923,2.18499723,4.58399418,9.32698816,11.05998596,11.64,12.38)
-#' dd=GwOptim(obsSnorm,dat$T,"MSE",lower=c(0,0),upper=c(200000,200),control = DEoptim.control(itermax=100))
+#' dd=GwOptim(obsSnormDra,DimlesTime,"MSE",lower=c(0,0),upper=c(200000,200),control = DEoptim.control(itermax=100))
+#' plot(log10(DimlesTime), obsSnormDra,pch=19,ylab="Dimensionless Drawdown [-]",xlab = "log10(Dimensionless Time) [-]")
+#' lines(log10(DimlesTime), dd$dimDrawdown,col="red")
 #'
 GwOptim = function(obs=NA,DimlesTime=NA,OPtFunType = "MSE",...){
 
@@ -47,6 +49,10 @@ GwOptim = function(obs=NA,DimlesTime=NA,OPtFunType = "MSE",...){
   Gwinput$Cbar=fit$optim$bestmem[1]
   Gwinput$Skin=fit$optim$bestmem[2]
   simDDD = DimensionlessDrawDown(Gwinput)
+
+  return(
+    list(Cbar = fit$optim$bestmem[1], Skin = fit$optim$bestmem[2], dimDrawdown=simDDD)
+  )
 }
 
 #' @export
